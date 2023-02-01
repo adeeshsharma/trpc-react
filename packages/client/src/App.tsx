@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { trpc } from './trpc';
 import { httpBatchLink } from '@trpc/client';
 import './index.scss';
@@ -13,15 +9,21 @@ import './index.scss';
 const queryClient = new QueryClient();
 
 const AppContent = () => {
+  // states to maintain a new user and message
   const [user, setUser] = useState('');
   const [message, setMessage] = useState('');
 
+  // querying the greeting prodecure
   const greeting = trpc.greeting.useQuery();
+
+  // querying the getMessages procedure, which by default returns last 10 messages
   const getLastTenMessages = trpc.getMessages.useQuery();
+
+  // querying the getMessages procedure with an argument, which returns last message
   const getLastMessage = trpc.getMessages.useQuery(1);
 
+  // create and addMessage procedure call which can be used to mutate data
   const newMessage = trpc.addMessage.useMutation();
-
   const addMessage = () => {
     newMessage.mutate(
       {
@@ -78,8 +80,6 @@ const AppContent = () => {
 };
 
 const App = () => {
-  // manages all the caching
-  // const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
